@@ -1,0 +1,131 @@
+<COMPONENT>
+
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="2.1"
+    STATUS="PROD"
+    COMPATIBILITY="ALL"
+    AUTHOR="Jan Lolling"
+    RELEASE_DATE="20150103A"
+    STARTABLE="true"
+  >
+    <SIGNATURE />
+  </HEADER>
+
+  <FAMILIES>
+    <FAMILY>Business_Intelligence/Jasper</FAMILY>
+  </FAMILIES>
+
+  <DOCUMENTATION>
+    <URL />
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="FLOW" MAX_OUTPUT="0" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" MAX_OUTPUT="1"/>
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" MAX_OUTPUT="1"/>
+    <CONNECTOR CTYPE="COMPONENT_OK" />
+    <CONNECTOR CTYPE="COMPONENT_ERROR" />
+    <CONNECTOR CTYPE="RUN_IF" />
+  </CONNECTORS>
+
+  <PARAMETERS>
+
+    <PARAMETER NAME="USE_EXISTING_CLIENT" FIELD="CHECK" NUM_ROW="1" REQUIRED="true" />
+   	<PARAMETER
+      	NAME="CLIENT_COMPONENT"
+      	FIELD="COMPONENT_LIST"
+      	FILTER="tJasperServer"
+      	NUM_ROW="1" 
+      	REQUIRED="true"
+      	SHOW_IF="USE_EXISTING_CLIENT == 'true'"
+   	/>
+    <PARAMETER NAME="SERVICE_REPOSITORY_URL" FIELD="TEXT" NUM_ROW="8" REQUIRED="true" SHOW_IF="USE_EXISTING_CLIENT == 'false'">
+      <DEFAULT>"http://localhost:8080/jasperserver/services/repository"</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER NAME="SERVICE_USER" FIELD="TEXT" NUM_ROW="10" REQUIRED="true" SHOW_IF="USE_EXISTING_CLIENT == 'false'">
+      <DEFAULT>"jasperadmin"</DEFAULT>
+    </PARAMETER>
+    
+	<PARAMETER NAME="SERVICE_PASSWORD" FIELD="TEXT" NUM_ROW="10" REQUIRED="true" SHOW_IF="USE_EXISTING_CLIENT == 'false'">
+	  <DEFAULT>"jasperadmin"</DEFAULT>
+	</PARAMETER> 
+
+    <PARAMETER
+      NAME="FILE_URI"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      REQUIRED="true"
+    >
+    <DEFAULT></DEFAULT>
+    </PARAMETER> 
+
+    <PARAMETER
+      NAME="DESTINATION_DIRECTORY"
+      FIELD="DIRECTORY"
+      NUM_ROW="40"
+      REQUIRED="true"
+    > 
+    <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>  
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="RENAME"
+      FIELD="CHECK"
+      REQUIRED="true"
+      NUM_ROW="50"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>    
+    
+    <PARAMETER
+      NAME="FILE_NAME"
+      FIELD="TEXT"
+      NUM_ROW="50"
+      REQUIRED="true"
+      SHOW_IF="RENAME == 'true'"
+    > 
+    <DEFAULT>"NewName"</DEFAULT>  
+    </PARAMETER>
+        
+    <PARAMETER
+      NAME="REPLACE_FILE"
+      FIELD="CHECK"
+      NUM_ROW="60"
+    >
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="CREATE_DIRECTORY"
+      FIELD="CHECK"
+      NUM_ROW="60"
+    >
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+   <PARAMETER
+      NAME="REMOVE_FILE"
+      FIELD="CHECK"
+      NUM_ROW="65"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+   
+  </PARAMETERS>
+
+  <CODEGENERATION>
+	<IMPORTS>
+      <IMPORT NAME="JasperRepoLib" MODULE="jlo.talendcomp.jasperservrepo-2.1.jar" REQUIRED_IF="USE_EXISTING_CLIENT == 'false'" />
+    </IMPORTS>
+  </CODEGENERATION>
+
+  <RETURNS>
+    <RETURN NAME="FILE_PATH" TYPE="id_String" AVAILABILITY="AFTER" />
+    <RETURN NAME="FILE_NAME" TYPE="id_String" AVAILABILITY="AFTER" />
+    <RETURN NAME="FILE_LENGTH" TYPE="id_Long" AVAILABILITY="AFTER" />
+  </RETURNS>
+
+</COMPONENT>

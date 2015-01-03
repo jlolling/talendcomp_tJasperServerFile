@@ -1,0 +1,51 @@
+<%@ jet
+	imports="
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode) codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+    boolean useExistingClient = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CLIENT__"));
+    String component = ElementParameterParser.getValue(node, "__CLIENT_COMPONENT__");
+	String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_REPOSITORY_URL__");
+	String serviceUser = ElementParameterParser.getValue(node, "__SERVICE_USER__");
+	String servicePassword = ElementParameterParser.getValue(node, "__SERVICE_PASSWORD__");
+	String folderURI = ElementParameterParser.getValue(node, "__FOLDER_URI__");
+	String recursive = ElementParameterParser.getValue(node, "__RECURSIVE__");
+	String filter = ElementParameterParser.getValue(node, "__FILE_NAME_FILTER__");
+%>
+    de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
+    // configure the connection
+<%  if (useExistingClient) { %>
+	 <%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
+<%  } else { %>
+    try {
+    	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
+    } catch (Exception e) {
+    	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+    	throw e;
+    }
+<%  } %>
+    try {
+    	// get the resource descriptors
+    	<%=cid%>.list(<%=folderURI%>, <%=((filter != null && filter.isEmpty() == false) ? filter : "null") %>, <%=recursive%>);
+    } catch (Exception e) {
+    	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+    	throw e;
+    }
+    int count_files_<%=cid%> = 0;
+    // iterator through the resources
+    while (<%=cid%>.nextListedResource()) {
+		count_files_<%=cid%>++;
+		globalMap.put("<%=cid%>_FILE_URI", <%=cid%>.getCurrentUri());
+		globalMap.put("<%=cid%>_FOLDER_URI", <%=cid%>.getCurrentListFolderUri());
+		globalMap.put("<%=cid%>_RELATIVE_FILE_URI", <%=cid%>.getCurrentRelativeUri());
+		globalMap.put("<%=cid%>_FILE_RESOURCE_ID", <%=cid%>.getCurrentResourceId());
+		globalMap.put("<%=cid%>_FILE_RESOURCE_LABEL", <%=cid%>.getCurrentResourceLabel());
+		globalMap.put("<%=cid%>_FILE_DOWNLOAD_LINK", <%=cid%>.getCurrentDownloadLink());
+		globalMap.put("<%=cid%>_NB_FILE", count_files_<%=cid%>);
