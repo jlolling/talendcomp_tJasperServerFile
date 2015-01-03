@@ -1,0 +1,41 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode  
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	String sourceUri = ElementParameterParser.getValue(node, "__SOURCE_URI__");
+	String targetFolderURI = ElementParameterParser.getValue(node, "__TARGET_FOLDER_URI__");
+	String createfolder = ElementParameterParser.getValue(node, "__CREATE_FOLDER__");
+	boolean move = "true".equals(ElementParameterParser.getValue(node, "__MOVE__"));
+	String overwrite = ElementParameterParser.getValue(node, "__OVERWRITE__");
+%>	
+<%  if ("true".equals(overwrite)) {%>
+	<%=cid%>.setOverwrite(true);
+<%  } else {%>
+	<%=cid%>.setOverwrite(false);
+<%  }%>
+	try {
+<%  if ("true".equals(createfolder)) {%>
+        // create folder if not exists
+		boolean <%=cid%>_folderCreated = <%=cid%>.createFolder(<%=targetFolderURI%>);
+		globalMap.put("<%=cid%>_FOLDER_CREATED", <%=cid%>_folderCreated);
+<%  }%>
+<%  if (move) {%>
+		<%=cid%>.move(<%=sourceUri%>, <%=targetFolderURI%>);
+<%  } else {%>
+		<%=cid%>.copy(<%=sourceUri%>, <%=targetFolderURI%>);
+<%  }%>
+		globalMap.put("<%=cid%>_FILE_URI", <%=cid%>.getCurrentUri()); 
+		globalMap.put("<%=cid%>_FILE_DOWNLOAD_LINK", <%=cid%>.getCurrentDownloadLink());
+		globalMap.put("<%=cid%>_FILE_NAME", <%=cid%>.getCurrentResourceId());
+	} catch (Exception e) {
+		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+		throw e;
+	}
