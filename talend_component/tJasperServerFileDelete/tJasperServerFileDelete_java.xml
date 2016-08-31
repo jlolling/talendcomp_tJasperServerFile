@@ -3,11 +3,11 @@
   <HEADER
     PLATEFORM="ALL"
     SERIAL=""
-    VERSION="2.1"
+    VERSION="2.2"
     STATUS="PROD"
     COMPATIBILITY="ALL"
-    AUTHOR="Jan Lolling"
-    RELEASE_DATE="20150103A"
+    AUTHOR="cimt AG"
+    RELEASE_DATE="20160831A"
     STARTABLE="true"
   >
     <SIGNATURE />
@@ -64,9 +64,17 @@
 
   </PARAMETERS>
 
+  <ADVANCED_PARAMETERS>
+	
+	<PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="10" SHOW_IF="USE_EXISTING_CLIENT == 'false'">
+	  <DEFAULT>30000</DEFAULT>
+	</PARAMETER> 
+	
+  </ADVANCED_PARAMETERS>
+
   <CODEGENERATION>
 	<IMPORTS>
-      <IMPORT NAME="JasperRepoLib" MODULE="jlo.talendcomp.jasperservrepo-2.1.jar" REQUIRED_IF="USE_EXISTING_CLIENT == 'false'" />
+      <IMPORT NAME="JasperRepoLib" MODULE="cimt-talendcomp-jasperservrepo-2.2.jar" REQUIRED_IF="USE_EXISTING_CLIENT == 'false'" />
     </IMPORTS>
   </CODEGENERATION>
 

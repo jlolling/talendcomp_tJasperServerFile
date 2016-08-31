@@ -40,6 +40,7 @@ public class RepositoryClient {
 	private int currentIndex = 0;
 	private File currentDownloadFile;
 	private static final String repositoryUrlPath = "/services/repository";
+	private Integer timeout = 20000;
 	
 	public static String checkRepositoryUrl(String urlStr) {
 		if (urlStr == null || urlStr.isEmpty()) {
@@ -116,6 +117,7 @@ public class RepositoryClient {
 		server.setUsername(user);
 		server.setPassword(password);
 		client = new WSClient(server);
+		client.setTimeout(timeout);
 	}
 	
 	public String getUrl() {
@@ -528,6 +530,10 @@ public class RepositoryClient {
 			throw new IllegalArgumentException("fullPath does not contains basePath!");
 		}
 		return fullPath.substring(pos + basePath.length() + 1);
+	}
+
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
 	}
 
 }

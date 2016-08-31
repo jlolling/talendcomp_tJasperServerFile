@@ -18,6 +18,10 @@
 	String folderURI = ElementParameterParser.getValue(node, "__FOLDER_URI__");
 	String recursive = ElementParameterParser.getValue(node, "__RECURSIVE__");
 	String filter = ElementParameterParser.getValue(node, "__FILE_NAME_FILTER__");
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+	if (timeout == null || timeout.trim().isEmpty()) {
+		timeout = "null";
+	}
 %>
     de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
     // configure the connection
@@ -25,6 +29,7 @@
 	 <%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
 <%  } else { %>
     try {
+      <%=cid%>.setTimeout(<%=timeout%>);
     	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
     } catch (Exception e) {
     	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());

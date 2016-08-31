@@ -63,6 +63,7 @@ public class WSClient {
 	private Unmarshaller unmarshaller = new Unmarshaller();
 	private Marshaller marshaller = new Marshaller();
 	private String cachedServerVersion;
+	private int timeout = 20000;
 
 	public WSClient(JServer server) throws Exception {
 		this.server = server;
@@ -410,7 +411,6 @@ public class WSClient {
 			((org.apache.axis.client.Stub) managementService).setPassword(getPassword());
 			((org.apache.axis.client.Stub) managementService).setMaintainSession(true);
 		}
-		int timeout = 20000;
 		if (timeout != ((org.apache.axis.client.Stub) managementService).getTimeout()) {
 			((org.apache.axis.client.Stub) managementService).setTimeout(timeout);
 		}
@@ -440,6 +440,12 @@ public class WSClient {
 			Thread.currentThread().setContextClassLoader(oldClassLoader);
 		}
 		return obj;
+	}
+
+	public void setTimeout(Integer timeout) {
+		if (timeout != null && timeout > 0) {
+			this.timeout = timeout;
+		}
 	}
 
 }

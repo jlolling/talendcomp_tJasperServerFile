@@ -6,7 +6,7 @@
 	<property name="bin" location="bin/" />
 	<property name="lib" location="lib/" />
 	<property name="distrib" location="distrib/" />
-	<property name="jarfilename" value="jlo.talendcomp.jasperservrepo-2.1.jar" />
+	<property name="jarfilename" value="cimt-talendcomp-jasperservrepo-2.2.jar" />
 	<property name="log4jfilename" value="log4j.properties" />
 	
 	<path id="project.class.path">
