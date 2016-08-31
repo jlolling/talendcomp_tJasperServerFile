@@ -16,6 +16,10 @@
 	String serviceUser = ElementParameterParser.getValue(node, "__SERVICE_USER__");
 	String servicePassword = ElementParameterParser.getValue(node, "__SERVICE_PASSWORD__");
 	boolean reuseClient = "true".equals(ElementParameterParser.getValue(node, "__CACHE_CLIENT__"));
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+	if (timeout == null || timeout.trim().isEmpty()) {
+		timeout = "null";
+	}
 %>
 <%  if (useExistingClient) { %>
     de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
@@ -31,6 +35,7 @@
 <%	  } %>
     // configure the connection
     try {
+      <%=cid%>.setTimeout(<%=timeout%>);
     	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>); 
     	globalMap.put("<%=cid%>", <%=cid%>);  
     } catch (Exception e) {
