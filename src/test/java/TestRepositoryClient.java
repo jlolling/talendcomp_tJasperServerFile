@@ -107,5 +107,5 @@ public class TestRepositoryClient {
 		String newUrl = RepositoryClient.checkRepositoryUrl(urlStr);
 		System.out.println(newUrl);
 	}
-	
+
 }
