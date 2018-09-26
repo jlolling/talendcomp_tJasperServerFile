@@ -138,9 +138,13 @@ public class RepositoryClient {
 		if (overwrite && existsFile(fileUri)) {
 			deleteResource(fileUri);
 		}
-		ResourceDescriptor uploadedRes = client.addOrModifyResource(rd, f);
-		currentUri = uploadedRes.getUriString();
-		return uploadedRes;
+		try {
+			ResourceDescriptor uploadedRes = client.addOrModifyResource(rd, f);
+			currentUri = uploadedRes.getUriString();
+			return uploadedRes;
+		} catch (Exception e) {
+			throw new Exception("Upload file: fileName: " + fileName + " folderUri: " + folderUri + " failed: " + e.getMessage(), e);
+		}
 	}
 	
 	public File downloadFile(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception {
@@ -169,7 +173,11 @@ public class RepositoryClient {
 		if (overwrite == false && currentDownloadFile.exists()) {
 			throw new Exception("File " + currentDownloadFile.getAbsolutePath() + " already exists!");
 		}
-		client.get(rd, currentDownloadFile);
+		try {
+			client.get(rd, currentDownloadFile);
+		} catch (Exception e) {
+			throw new Exception("download file: uri: " + uri + " targetFile: " + targetFileName + " failed: " + e.getMessage(), e);
+		}
 		return currentDownloadFile;
 	}
 
@@ -186,7 +194,11 @@ public class RepositoryClient {
 			deleteResource(targetUri);
 		}
 		currentUri = targetUri;
-		return client.copy(sourceRd, targetUri);
+		try {
+			return client.copy(sourceRd, targetUri);
+		} catch (Exception e) {
+			throw new Exception("copy sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
+		}
 	}
 	
 	public void move(String sourceUri, String targetFolderUri) throws Exception {
@@ -202,7 +214,11 @@ public class RepositoryClient {
 			deleteResource(targetUri);
 		}
 		currentUri = targetUri;
-		client.move(sourceRd, targetFolderUri);
+		try {
+			client.move(sourceRd, targetFolderUri);
+		} catch (Exception e) {
+			throw new Exception("move sourceUri: " + sourceUri + " targetFolderUri: " + targetFolderUri + " failed: " + e.getMessage(), e);
+		}
 	}
 
 	public void downloadFile(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception {
@@ -216,7 +232,11 @@ public class RepositoryClient {
 		ResourceDescriptor rd = createResourceDescriptor(resourceId, folderURI, null);
 		currentUri = rd.getUriString();
 		currentResourceDescriptor = rd;
-		client.delete(rd);
+		try {
+			client.delete(rd);
+		} catch (Exception e) {
+			throw new Exception("delete uri: " + uri + " failed: " + e.getMessage(), e);
+		}
 	}
 	
 	private ResourceDescriptor createResourceDescriptor(File uploadFile, String folderURI, String description) {

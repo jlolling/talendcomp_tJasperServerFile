@@ -128,17 +128,12 @@ public class WSClient {
 	 */
 	@SuppressWarnings("unchecked")
 	public java.util.List<ResourceDescriptor> list(String xmlRequest) throws Exception {
-		try {
-			String result = getManagementService().list(xmlRequest);
-			OperationResult or = (OperationResult) unmarshal(result);
-			if (or.getReturnCode() != 0)
-				throw new Exception(or.getReturnCode() + " - "
-						+ or.getMessage());
-			return or.getResourceDescriptors();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
-		}
+		String result = getManagementService().list(xmlRequest);
+		OperationResult or = (OperationResult) unmarshal(result);
+		if (or.getReturnCode() != 0)
+			throw new Exception(or.getReturnCode() + " - "
+					+ or.getMessage());
+		return or.getResourceDescriptors();
 	}
 
 	public void delete(ResourceDescriptor descriptor) throws Exception {
@@ -152,24 +147,19 @@ public class WSClient {
 	 */
 	@SuppressWarnings("unchecked")
 	public void delete(ResourceDescriptor descriptor, String reportUnitUri)	throws Exception {
-		try {
-			Request req = new Request();
-			req.setOperationName("delete");
-			req.setResourceDescriptor(descriptor);
-			req.setLocale(getServer().getLocale());
-			if (reportUnitUri != null && reportUnitUri.length() > 0) {
-				req.getArguments()
-						.add(new Argument(Argument.MODIFY_REPORTUNIT,
-								reportUnitUri));
-			}
-			String result = getManagementService().delete(marshaller.marshal(req));
-			OperationResult or = (OperationResult) unmarshal(result);
-			if (or.getReturnCode() != 0)
-				throw new Exception(or.getReturnCode() + " - "
-						+ or.getMessage());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
+		Request req = new Request();
+		req.setOperationName("delete");
+		req.setResourceDescriptor(descriptor);
+		req.setLocale(getServer().getLocale());
+		if (reportUnitUri != null && reportUnitUri.length() > 0) {
+			req.getArguments()
+					.add(new Argument(Argument.MODIFY_REPORTUNIT,
+							reportUnitUri));
+		}
+		String result = getManagementService().delete(marshaller.marshal(req));
+		OperationResult or = (OperationResult) unmarshal(result);
+		if (or.getReturnCode() != 0) {
+			throw new Exception(or.getReturnCode() + " - " + or.getMessage());
 		}
 	}
 
@@ -177,7 +167,7 @@ public class WSClient {
 	 * Export a resource using the "get" ws and save the resource in the file
 	 * specified by the user... If the outputFile is null, the argument
 	 * "NO_ATTACHMENT" is added to the request in order of avoid the attachment
-	 * trasmission.
+	 * transmission.
 	 * 
 	 */
 	public ResourceDescriptor get(ResourceDescriptor descriptor, File outputFile) throws Exception {
@@ -297,68 +287,58 @@ public class WSClient {
 			String reportUnitUri,
 			ResourceDescriptor descriptor, 
 			RequestAttachment[] attachments) throws Exception {
-		try {
-			Request req = new Request();
-			req.setOperationName("put");
-			req.setLocale(getServer().getLocale());
-			if (reportUnitUri != null && reportUnitUri.length() > 0) {
-				req.getArguments()
-						.add(new Argument(Argument.MODIFY_REPORTUNIT,
-								reportUnitUri));
-			}
-			ManagementService ms = getManagementService();
-			// attach the file...
-			if (attachments != null && attachments.length > 0) {
-				descriptor.setHasData(true);
-				// Tell the stub that the message being formed also contains an
-				// attachment, and it is of type MIME encoding.
-
-				((org.apache.axis.client.Stub) ms)._setProperty(
-						Call.ATTACHMENT_ENCAPSULATION_FORMAT,
-						Call.ATTACHMENT_ENCAPSULATION_FORMAT_MIME);
-				for (int i = 0; i < attachments.length; i++) {
-					RequestAttachment attachment = attachments[i];
-					DataHandler attachmentHandler = new DataHandler(attachment.getDataSource());
-					AttachmentPart attachmentPart = new AttachmentPart(attachmentHandler);
-					if (attachment.getContentID() != null) {
-						attachmentPart.setContentId(attachment.getContentID());
-					}
-					// Add the attachment to the message
-					((org.apache.axis.client.Stub) ms).addAttachment(attachmentPart);
-				}
-			}
-			req.setResourceDescriptor(descriptor);
-			String result = ms.put(marshaller.marshal(req));
-			OperationResult or = (OperationResult) unmarshal(result);
-			if (or.getReturnCode() != 0) {
-				throw new Exception("resourceId=" + descriptor.getName() + " failed: " + or.getReturnCode() + " - " + or.getMessage());
-			}
-			return (ResourceDescriptor) or.getResourceDescriptors().get(0);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
+		Request req = new Request();
+		req.setOperationName("put");
+		req.setLocale(getServer().getLocale());
+		if (reportUnitUri != null && reportUnitUri.length() > 0) {
+			req.getArguments()
+					.add(new Argument(Argument.MODIFY_REPORTUNIT,
+							reportUnitUri));
 		}
+		ManagementService ms = getManagementService();
+		// attach the file...
+		if (attachments != null && attachments.length > 0) {
+			descriptor.setHasData(true);
+			// Tell the stub that the message being formed also contains an
+			// attachment, and it is of type MIME encoding.
+
+			((org.apache.axis.client.Stub) ms)._setProperty(
+					Call.ATTACHMENT_ENCAPSULATION_FORMAT,
+					Call.ATTACHMENT_ENCAPSULATION_FORMAT_MIME);
+			for (int i = 0; i < attachments.length; i++) {
+				RequestAttachment attachment = attachments[i];
+				DataHandler attachmentHandler = new DataHandler(attachment.getDataSource());
+				AttachmentPart attachmentPart = new AttachmentPart(attachmentHandler);
+				if (attachment.getContentID() != null) {
+					attachmentPart.setContentId(attachment.getContentID());
+				}
+				// Add the attachment to the message
+				((org.apache.axis.client.Stub) ms).addAttachment(attachmentPart);
+			}
+		}
+		req.setResourceDescriptor(descriptor);
+		String result = ms.put(marshaller.marshal(req));
+		OperationResult or = (OperationResult) unmarshal(result);
+		if (or.getReturnCode() != 0) {
+			throw new Exception("resourceId=" + descriptor.getName() + " failed: " + or.getReturnCode() + " - " + or.getMessage());
+		}
+		return (ResourceDescriptor) or.getResourceDescriptors().get(0);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void move(ResourceDescriptor resource, String destinationURI) throws Exception {
-		try {
-			Request req = new Request();
-			req.setOperationName("move");
-			req.setResourceDescriptor(resource);
-			req.setLocale(getServer().getLocale());
-			req.getArguments()
-					.add(new Argument(
-							Argument.DESTINATION_URI,
-							destinationURI));
-			String result = getManagementService().move(marshaller.marshal(req));
-			OperationResult or = (OperationResult) unmarshal(result);
-			if (or.getReturnCode() != OperationResult.SUCCESS) {
-				throw new Exception(or.getReturnCode() + " - " + or.getMessage());
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
+		Request req = new Request();
+		req.setOperationName("move");
+		req.setResourceDescriptor(resource);
+		req.setLocale(getServer().getLocale());
+		req.getArguments()
+				.add(new Argument(
+						Argument.DESTINATION_URI,
+						destinationURI));
+		String result = getManagementService().move(marshaller.marshal(req));
+		OperationResult or = (OperationResult) unmarshal(result);
+		if (or.getReturnCode() != OperationResult.SUCCESS) {
+			throw new Exception(or.getReturnCode() + " - " + or.getMessage());
 		}
 	}
 
@@ -366,33 +346,28 @@ public class WSClient {
 	public ResourceDescriptor copy(
 			ResourceDescriptor resource,
 			String destinationURI) throws Exception {
-		try {
-			Request req = new Request();
-			req.setOperationName("copy");
-			req.setResourceDescriptor(resource);
-			req.setLocale(getServer().getLocale());
-			req.getArguments()
-					.add(new Argument(
-							Argument.DESTINATION_URI,
-							destinationURI));
-			String result = getManagementService().copy(marshaller.marshal(req));
-			OperationResult or = (OperationResult) unmarshal(result);
-			if (or.getReturnCode() != OperationResult.SUCCESS) {
-				throw new Exception(or.getReturnCode() + " - "
-						+ or.getMessage());
-			}
-			ResourceDescriptor copyDescriptor;
-			List<ResourceDescriptor> resultDescriptors = or.getResourceDescriptors();
-			if (resultDescriptors == null || resultDescriptors.isEmpty()) {
-				copyDescriptor = null;
-			} else {
-				copyDescriptor = (ResourceDescriptor) resultDescriptors.get(0);
-			}
-			return copyDescriptor;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
+		Request req = new Request();
+		req.setOperationName("copy");
+		req.setResourceDescriptor(resource);
+		req.setLocale(getServer().getLocale());
+		req.getArguments()
+				.add(new Argument(
+						Argument.DESTINATION_URI,
+						destinationURI));
+		String result = getManagementService().copy(marshaller.marshal(req));
+		OperationResult or = (OperationResult) unmarshal(result);
+		if (or.getReturnCode() != OperationResult.SUCCESS) {
+			throw new Exception(or.getReturnCode() + " - "
+					+ or.getMessage());
 		}
+		ResourceDescriptor copyDescriptor;
+		List<ResourceDescriptor> resultDescriptors = or.getResourceDescriptors();
+		if (resultDescriptors == null || resultDescriptors.isEmpty()) {
+			copyDescriptor = null;
+		} else {
+			copyDescriptor = resultDescriptors.get(0);
+		}
+		return copyDescriptor;
 	}
 
 	public String getWebservicesUri() {
@@ -434,7 +409,6 @@ public class WSClient {
 		Object obj = null;
 		ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
-//			Thread.currentThread().setContextClassLoader(DOMParser.class.getClassLoader());
 			obj = unmarshaller.unmarshal(xml);
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldClassLoader);
