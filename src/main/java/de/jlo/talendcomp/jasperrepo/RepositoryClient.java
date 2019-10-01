@@ -22,20 +22,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
+public class RepositoryClient implements IRepositoryClient {
 
-import com.jaspersoft.ireport.jasperserver.JServer;
-import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceDescriptor;
-
-public class RepositoryClient {
-
-	private JServer server = null;
-	private WSClient client;
 	private String currentUri;
-	private ResourceDescriptor currentResourceDescriptor;
 	private boolean overwrite = false;
 	private static String fileViewUri = "/fileview/fileview";
-	private List<ResourceDescriptor> currentListResult;
 	private String currentListFolderUri;
 	private int currentIndex = 0;
 	private File currentDownloadFile;
@@ -87,72 +78,40 @@ public class RepositoryClient {
 		return overwrite;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#setOverwrite(boolean)
+	 */
 	public void setOverwrite(boolean overwrite) {
 		this.overwrite = overwrite;
 	}
 	
-	public WSClient getClient() {
-		return client;
-	}
-	
-	public void init(RepositoryClient repoClient) {
-		if (repoClient == null) {
-			throw new IllegalArgumentException("RepositoryClient cannot be null");
-		}
-		this.client = repoClient.getClient();
-		this.server = client.getServer();
-	}
-
-	public void init(WSClient client) {
-		if (client == null) {
-			throw new IllegalArgumentException("WSClient cannot be null");
-		}
-		this.client = client;
-		this.server = client.getServer();
-	}
-
-	public void init(String urlStr, String user, String password) throws Exception {
-		server = new JServer();
-		server.setUrl(checkRepositoryUrl(urlStr));
-		server.setUsername(user);
-		server.setPassword(password);
-		client = new WSClient(server);
-		client.setTimeout(timeout);
-	}
-	
-	public String getUrl() {
-		return server.getUrl();
-	}
-	
-	public ResourceDescriptor uploadFile(String fileName, String folderUri, String description) throws Exception {
+	public void uploadFile(String fileName, String folderUri, String description) throws Exception {
 		File f = new File(fileName);
 		if (f.canRead() == false) {
 			throw new IOException("File " + f.getAbsolutePath() + " does not exists or cannot be read!");
 		}
 		if (description == null) {
-			description = "Uploaded by " + server.getUsername();
+
 		}
-		ResourceDescriptor rd = createResourceDescriptor(f, folderUri, description);
-		currentUri = rd.getUriString();
+
 		final String fileUri = currentUri;
 		if (overwrite && existsFile(fileUri)) {
 			deleteResource(fileUri);
 		}
 		try {
-			ResourceDescriptor uploadedRes = client.addOrModifyResource(rd, f);
-			currentUri = uploadedRes.getUriString();
-			return uploadedRes;
+
 		} catch (Exception e) {
 			throw new Exception("Upload file: fileName: " + fileName + " folderUri: " + folderUri + " failed: " + e.getMessage(), e);
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#downloadFile(java.lang.String, java.io.File, java.lang.String, boolean, boolean)
+	 */
 	public File downloadFile(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception {
 		String resourceId = getResourceId(uri);
 		String folderURI = getParentUri(uri);
-		ResourceDescriptor rd = createResourceDescriptor(resourceId, folderURI, null);
-		currentResourceDescriptor = rd;
-		currentUri = rd.getUriString();
+
 		if (targetFileName == null || targetFileName.isEmpty()) {
 			targetFileName = resourceId;
 		}
@@ -174,20 +133,20 @@ public class RepositoryClient {
 			throw new Exception("File " + currentDownloadFile.getAbsolutePath() + " already exists!");
 		}
 		try {
-			client.get(rd, currentDownloadFile);
+
 		} catch (Exception e) {
 			throw new Exception("download file: uri: " + uri + " targetFile: " + targetFileName + " failed: " + e.getMessage(), e);
 		}
 		return currentDownloadFile;
 	}
 
-	public ResourceDescriptor copy(String sourceUri, String targetFolderUri) throws Exception {
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#copy(java.lang.String, java.lang.String)
+	 */
+	public void copy(String sourceUri, String targetFolderUri) throws Exception {
 		String sourceResourceId = getResourceId(sourceUri);
 		String sourceFolderURI = getParentUri(sourceUri);
-		ResourceDescriptor sourceRd = createResourceDescriptor(sourceResourceId, sourceFolderURI, null);
-		sourceRd.setIsNew(false);
-		sourceRd.setHasData(false);
-		currentResourceDescriptor = sourceRd;
+
 		currentUri = targetFolderUri + "/" + sourceResourceId;
 		String targetUri = targetFolderUri + "/" + sourceResourceId;
 		if (overwrite && existsFile(targetUri)) {
@@ -195,19 +154,19 @@ public class RepositoryClient {
 		}
 		currentUri = targetUri;
 		try {
-			return client.copy(sourceRd, targetUri);
+
 		} catch (Exception e) {
 			throw new Exception("copy sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#move(java.lang.String, java.lang.String)
+	 */
 	public void move(String sourceUri, String targetFolderUri) throws Exception {
 		String sourceResourceId = getResourceId(sourceUri);
 		String sourceFolderURI = getParentUri(sourceUri);
-		ResourceDescriptor sourceRd = createResourceDescriptor(sourceResourceId, sourceFolderURI, null);
-		sourceRd.setIsNew(false);
-		sourceRd.setHasData(false);
-		currentResourceDescriptor = sourceRd;
+
 		currentUri = targetFolderUri + "/" + sourceResourceId;
 		String targetUri = targetFolderUri + "/" + sourceResourceId;
 		if (overwrite && existsFile(targetUri)) {
@@ -215,45 +174,34 @@ public class RepositoryClient {
 		}
 		currentUri = targetUri;
 		try {
-			client.move(sourceRd, targetFolderUri);
+
 		} catch (Exception e) {
 			throw new Exception("move sourceUri: " + sourceUri + " targetFolderUri: " + targetFolderUri + " failed: " + e.getMessage(), e);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#downloadFile(java.lang.String, java.lang.String, java.lang.String, boolean, boolean)
+	 */
 	public void downloadFile(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception {
 		final File file = new File(dir);
 		downloadFile(uri, file, name, createDir, overwrite);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#deleteResource(java.lang.String)
+	 */
 	public void deleteResource(String uri) throws Exception {
 		String resourceId = getResourceId(uri);
 		String folderURI = getParentUri(uri);
-		ResourceDescriptor rd = createResourceDescriptor(resourceId, folderURI, null);
-		currentUri = rd.getUriString();
-		currentResourceDescriptor = rd;
+
 		try {
-			client.delete(rd);
+
 		} catch (Exception e) {
 			throw new Exception("delete uri: " + uri + " failed: " + e.getMessage(), e);
 		}
 	}
-	
-	private ResourceDescriptor createResourceDescriptor(File uploadFile, String folderURI, String description) {
-		ResourceDescriptor rd = new ResourceDescriptor();
-		rd.setName(buildResourceId(uploadFile.getName()));
-		rd.setLabel(uploadFile.getName());
-		rd.setParentFolder(folderURI);
-		rd.setDescription(description);
-		rd.setUriString(rd.getParentFolder() + "/" + rd.getName());
-		rd.setWsType(ResourceDescriptor.TYPE_CONTENT_RESOURCE);
-		rd.setResourceType(getResourceType(uploadFile.getName()));
-		rd.setResourceProperty(ResourceDescriptor.PROP_CONTENT_RESOURCE_TYPE, getResourceType(uploadFile.getName()));
-		rd.setHasData(true);
-		rd.setIsNew(true);
-		return rd;
-	}
-	
+		
 	private String buildResourceId(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("buildResourceId failed: name cannot be null");
@@ -266,83 +214,22 @@ public class RepositoryClient {
 		return name;
 	}
 	
-	private ResourceDescriptor createResourceDescriptor(String resourceId, String folderURI, String description) {
-		ResourceDescriptor rd = new ResourceDescriptor();
-		rd.setWsType(ResourceDescriptor.TYPE_CONTENT_RESOURCE);
-		rd.setResourceType(getResourceType(resourceId));
-		rd.setName(resourceId);
-		rd.setDescription(description);
-		rd.setParentFolder(folderURI);
-		rd.setUriString(rd.getParentFolder() + "/" + resourceId);
-		rd.setHasData(true);
-		rd.setIsNew(true);
-		return rd;
-	}
 	
-	private ResourceDescriptor createFolderResourceDescriptor(String uri, String description) {
-		ResourceDescriptor rd = new ResourceDescriptor();
-		rd.setHasData(false);
-		rd.setIsNew(true);
-		rd.setWsType(ResourceDescriptor.TYPE_FOLDER);
-		if (uri.equals("/")) {
-			// create root
-			rd.setName("root");
-			rd.setUriString("/");
-		} else {
-			String folderUri = getParentUri(uri);
-			String resourceId = getResourceId(uri);
-			rd.setName(resourceId);
-			rd.setLabel(resourceId);
-			rd.setDescription(description);
-			rd.setParentFolder(folderUri);
-			if (folderUri.equals("/")) {
-				rd.setUriString("/" + resourceId);
-			} else {
-				rd.setUriString(rd.getParentFolder() + "/" + resourceId);
-			}
-		}
-		return rd;
-	}
-	
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#existsFile(java.lang.String)
+	 */
 	public boolean existsFile(String uri) throws Exception {
-		return getFileResourceDescriptor(uri) != null;
+		return false;
 	}
 	
-	private ResourceDescriptor getFileResourceDescriptor(String uri) throws Exception {
-		String folderUri = getParentUri(uri);
-		String resourceId = getResourceId(uri);
-		List<ResourceDescriptor> list = list(folderUri, null, false);
-		for (ResourceDescriptor rd : list) {
-			if (rd.getName().equals(resourceId)) {
-				return rd;
-			}
-		}
-		return null;
-	}
-	
-	private ResourceDescriptor getFolderResourceDescriptor(String uri) throws Exception {
-		String folderUri = getParentUri(uri);
-		String resourceId = getResourceId(uri);
-		List<ResourceDescriptor> list = listFolders(folderUri);
-		for (ResourceDescriptor rd : list) {
-			if (rd.getName().equals(resourceId)) {
-				return rd;
-			}
-		}
-		return null;
-	}
-
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#createFolder(java.lang.String)
+	 */
 	public boolean createFolder(String uri) throws Exception {
 		List<String> uriPath = buildPathList(uri);
 		boolean created = false;
 		for (String u : uriPath) {
-			ResourceDescriptor rd = getFolderResourceDescriptor(u);
-			if (rd == null) {
-				rd = createFolderResourceDescriptor(u, null);
-				client.addOrModifyResource(rd, null);
-				currentUri = rd.getUriString();
-				created = true;
-			}
+
 		}
 		return created;
 	}
@@ -368,52 +255,16 @@ public class RepositoryClient {
 		return level;
 	}
 	
-	public List<ResourceDescriptor> list(String folderUri, String filterExpr, boolean recursive) throws Exception {
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#list(java.lang.String, java.lang.String, boolean)
+	 */
+	public void list(String folderUri, String filterExpr, boolean recursive) throws Exception {
 		currentListFolderUri = folderUri;
-		currentListResult = new ArrayList<ResourceDescriptor>();
-		list(folderUri, filterExpr, recursive, currentListResult);
-		return currentListResult;
-	}
-	
-	private void list(String folderUri, String filterExpr, boolean recursive, List<ResourceDescriptor> list) throws Exception {
-		ResourceDescriptor rd = createFolderResourceDescriptor(folderUri, null);
-		currentUri = rd.getUriString();
-		boolean dofilter = filterExpr != null && filterExpr.isEmpty() == false;
-		final List<ResourceDescriptor> allResults = client.list(rd);
-		for (ResourceDescriptor r : allResults) {
-			if (isContentResource(r)) {
-				if (dofilter == false || FilenameUtils.wildcardMatch(getResourceId(r.getUriString()), filterExpr)) {
-					list.add(r);
-				}
-			}
-		}
-		for (ResourceDescriptor r : allResults) {
-			if (recursive && isFolder(r)) {
-				list(folderUri + "/" + r.getName(), filterExpr, recursive, list);
-			}
-		}
-	}
-	
-	private List<ResourceDescriptor> listFolders(String folderUri) throws Exception {
-		List<ResourceDescriptor> list = new ArrayList<ResourceDescriptor>();
-		ResourceDescriptor rdParentFolder = createFolderResourceDescriptor(folderUri, null);
-		final List<ResourceDescriptor> allResults = client.list(rdParentFolder);
-		for (ResourceDescriptor rd : allResults) {
-			if (isFolder(rd)) {
-				list.add(rd);
-			}
-		}
-		return list;
-	}
 
+	}
+	
 	public boolean nextListedResource() {
-		if (currentIndex < currentListResult.size()) {
-			currentResourceDescriptor = currentListResult.get(currentIndex++);
-			currentUri = currentResourceDescriptor.getUriString();
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 	
 	private String getParentUri(String uri) {
@@ -447,21 +298,22 @@ public class RepositoryClient {
 		if (p > 0 && p < filename.length() - 1) {
 			String ext = filename.substring(p + 1).toLowerCase();
 			if ("pdf".equals(ext)) {
-				return ResourceDescriptor.CONTENT_TYPE_PDF;
+
 			} else if ("xls".equals(ext) || "xlsx".equals(ext) || "ods".equals(ext)) {
-				return ResourceDescriptor.CONTENT_TYPE_XLS;
+
 			} else if ("png".equals(ext) || "gif".equals(ext) || "bmp".equals(ext) || "psd".equals(ext) || "jpg".equals(ext) || "dia".equals(ext)) {
-				return ResourceDescriptor.CONTENT_TYPE_IMAGE;
+
 			} else if ("html".equals(ext)) {
-				return ResourceDescriptor.CONTENT_TYPE_HTML;
+
 			} else if ("rtf".equals(ext) || "doc".equals(ext) || "docx".equals(ext)) {
-				return ResourceDescriptor.CONTENT_TYPE_RTF;
+
 			} else {
-				return ResourceDescriptor.CONTENT_TYPE_CSV;
+
 			}
 		} else {
-			return ResourceDescriptor.CONTENT_TYPE_CSV;
+
 		}
+		return null;
 	}
 
 	public String getCurrentUri() {
@@ -480,34 +332,8 @@ public class RepositoryClient {
 		return getResourceId(currentUri);
 	}
 	
-	public boolean isCurrentResourceFolder() {
-		return isFolder(currentResourceDescriptor);
-	}
-	
-	public String getCurrentResourceLabel() {
-		return currentResourceDescriptor.getLabel();
-	}
-	
-	private static boolean isFolder(ResourceDescriptor rd) {
-		return ResourceDescriptor.TYPE_FOLDER.equals(rd.getWsType());
-	}
-	
-	private static boolean isContentResource(ResourceDescriptor rd) {
-		if (ResourceDescriptor.TYPE_CONTENT_RESOURCE.equals(rd.getWsType())) {
-			return true;
-		} else {
-			Object test = rd.getProperty("PROP_RESOURCE_TYPE");
-			if (test instanceof com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceProperty) {
-				com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceProperty p = (com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.ResourceProperty) test;
-				return "com.jaspersoft.jasperserver.api.metadata.common.domain.FileResource".equals(p.getValue());
-			} else {
-				return false;
-			}
-		}
-	}
-	
 	public String getCurrentDownloadLink() throws MalformedURLException {
-		URL url = new URL(server.getUrl());
+		URL url = null;
 		String path = url.getPath();
 		int pos = path.indexOf('/', 1);
 		StringBuilder sb = new StringBuilder();
@@ -552,6 +378,9 @@ public class RepositoryClient {
 		return fullPath.substring(pos + basePath.length() + 1);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#setTimeout(java.lang.Integer)
+	 */
 	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
 	}
