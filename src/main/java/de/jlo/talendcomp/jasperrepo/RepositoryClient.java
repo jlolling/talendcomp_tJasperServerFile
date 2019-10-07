@@ -30,8 +30,31 @@ public class RepositoryClient implements IRepositoryClient {
 	private String currentListFolderUri;
 	private int currentIndex = 0;
 	private File currentDownloadFile;
-	private static final String repositoryUrlPath = "/services/repository";
+	private static final String repositoryUrlPath = "/rest_v2/resources";
+	private static final String serverInfoUrlPath = "/rest_v2/serverInfo";
 	private Integer timeout = 20000;
+	private HttpClient cachedHttpClient = null;
+	
+	public String init(String serverUrl, String user, String password) throws Exception {
+		cachedHttpClient = new HttpClient(serverUrl, user, password, timeout);
+		return cachedHttpClient.getServerUrl() + " " + getServerInfo();
+	}
+	
+	public String getAbsoluteRepoUrl(String uri) throws Exception {
+		checkHttpClient();
+		return cachedHttpClient.getAbsoluteUrl(repositoryUrlPath + uri);
+	}
+	
+	private void checkHttpClient() throws Exception {
+		if (cachedHttpClient == null) {
+			throw new Exception("HttpClient is not initialized. Call RepositoryClient#init before!");
+		}
+	}
+	
+	public String getServerInfo() throws Exception {
+		checkHttpClient();
+		return cachedHttpClient.get(cachedHttpClient.getAbsoluteUrl(serverInfoUrlPath));
+	}
 	
 	public static String checkRepositoryUrl(String urlStr) {
 		if (urlStr == null || urlStr.isEmpty()) {
@@ -81,21 +104,22 @@ public class RepositoryClient implements IRepositoryClient {
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#setOverwrite(boolean)
 	 */
+	@Override
 	public void setOverwrite(boolean overwrite) {
 		this.overwrite = overwrite;
 	}
 	
+	@Override
 	public void uploadFile(String fileName, String folderUri, String description) throws Exception {
 		File f = new File(fileName);
 		if (f.canRead() == false) {
 			throw new IOException("File " + f.getAbsolutePath() + " does not exists or cannot be read!");
 		}
 		if (description == null) {
-
+			description = "Uploaded by Talend-job.";
 		}
-
 		final String fileUri = currentUri;
-		if (overwrite && existsFile(fileUri)) {
+		if (overwrite && existsResource(fileUri)) {
 			deleteResource(fileUri);
 		}
 		try {
@@ -108,10 +132,9 @@ public class RepositoryClient implements IRepositoryClient {
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#downloadFile(java.lang.String, java.io.File, java.lang.String, boolean, boolean)
 	 */
+	@Override
 	public File downloadFile(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception {
 		String resourceId = getResourceId(uri);
-		String folderURI = getParentUri(uri);
-
 		if (targetFileName == null || targetFileName.isEmpty()) {
 			targetFileName = resourceId;
 		}
@@ -133,23 +156,34 @@ public class RepositoryClient implements IRepositoryClient {
 			throw new Exception("File " + currentDownloadFile.getAbsolutePath() + " already exists!");
 		}
 		try {
-
+			String downloadUrl = getAbsoluteRepoUrl(uri);
+			cachedHttpClient.download(downloadUrl, currentDownloadFile.getAbsolutePath());
 		} catch (Exception e) {
 			throw new Exception("download file: uri: " + uri + " targetFile: " + targetFileName + " failed: " + e.getMessage(), e);
 		}
 		return currentDownloadFile;
 	}
 
+	/* (non-Javadoc) 
+	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#downloadFile(java.lang.String, java.lang.String, java.lang.String, boolean, boolean)
+	 */
+	@Override
+	public File downloadFile(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception {
+		final File file = new File(dir);
+		return downloadFile(uri, file, name, createDir, overwrite);
+	}
+
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#copy(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void copy(String sourceUri, String targetFolderUri) throws Exception {
 		String sourceResourceId = getResourceId(sourceUri);
 		String sourceFolderURI = getParentUri(sourceUri);
 
 		currentUri = targetFolderUri + "/" + sourceResourceId;
 		String targetUri = targetFolderUri + "/" + sourceResourceId;
-		if (overwrite && existsFile(targetUri)) {
+		if (overwrite && existsResource(targetUri)) {
 			deleteResource(targetUri);
 		}
 		currentUri = targetUri;
@@ -163,13 +197,14 @@ public class RepositoryClient implements IRepositoryClient {
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#move(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void move(String sourceUri, String targetFolderUri) throws Exception {
 		String sourceResourceId = getResourceId(sourceUri);
 		String sourceFolderURI = getParentUri(sourceUri);
 
 		currentUri = targetFolderUri + "/" + sourceResourceId;
 		String targetUri = targetFolderUri + "/" + sourceResourceId;
-		if (overwrite && existsFile(targetUri)) {
+		if (overwrite && existsResource(targetUri)) {
 			deleteResource(targetUri);
 		}
 		currentUri = targetUri;
@@ -181,22 +216,13 @@ public class RepositoryClient implements IRepositoryClient {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#downloadFile(java.lang.String, java.lang.String, java.lang.String, boolean, boolean)
-	 */
-	public void downloadFile(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception {
-		final File file = new File(dir);
-		downloadFile(uri, file, name, createDir, overwrite);
-	}
-
-	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#deleteResource(java.lang.String)
 	 */
+	@Override
 	public void deleteResource(String uri) throws Exception {
-		String resourceId = getResourceId(uri);
-		String folderURI = getParentUri(uri);
-
+		checkHttpClient();
 		try {
-
+			cachedHttpClient.delete(getAbsoluteRepoUrl(uri));
 		} catch (Exception e) {
 			throw new Exception("delete uri: " + uri + " failed: " + e.getMessage(), e);
 		}
@@ -214,17 +240,31 @@ public class RepositoryClient implements IRepositoryClient {
 		return name;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#existsFile(java.lang.String)
-	 */
-	public boolean existsFile(String uri) throws Exception {
-		return false;
+	@Override
+	public boolean existsResource(String uri) throws Exception {
+		checkHttpClient();
+		try {
+			return cachedHttpClient.exist(getAbsoluteRepoUrl(uri));
+		} catch (Exception e) {
+			throw new Exception("existsResource uri: " + uri + " failed: " + e.getMessage(), e);
+		}
 	}
 	
+	@Override
+	public String infoResource(String uri, boolean expanded) throws Exception {
+		checkHttpClient();
+		try {
+			String content = cachedHttpClient.get(getAbsoluteRepoUrl(uri) + (expanded ? "?expanded=true" : ""));
+			return content;
+		} catch (Exception e) {
+			throw new Exception("infoResource uri: " + uri + " failed: " + e.getMessage(), e);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#createFolder(java.lang.String)
 	 */
+	@Override
 	public boolean createFolder(String uri) throws Exception {
 		List<String> uriPath = buildPathList(uri);
 		boolean created = false;
@@ -258,11 +298,13 @@ public class RepositoryClient implements IRepositoryClient {
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#list(java.lang.String, java.lang.String, boolean)
 	 */
+	@Override
 	public void list(String folderUri, String filterExpr, boolean recursive) throws Exception {
 		currentListFolderUri = folderUri;
 
 	}
 	
+	@Override
 	public boolean nextListedResource() {
 		return false;
 	}
@@ -293,14 +335,14 @@ public class RepositoryClient implements IRepositoryClient {
 		return uri.substring(pos + 1);
 	}
 
-	private String getResourceType(String filename) {
+	private String getResourceMimeType(String filename) {
 		int p = filename.lastIndexOf('.');
 		if (p > 0 && p < filename.length() - 1) {
 			String ext = filename.substring(p + 1).toLowerCase();
 			if ("pdf".equals(ext)) {
-
+				return "application/pdf";
 			} else if ("xls".equals(ext) || "xlsx".equals(ext) || "ods".equals(ext)) {
-
+				return "application/excel";
 			} else if ("png".equals(ext) || "gif".equals(ext) || "bmp".equals(ext) || "psd".equals(ext) || "jpg".equals(ext) || "dia".equals(ext)) {
 
 			} else if ("html".equals(ext)) {
@@ -332,8 +374,8 @@ public class RepositoryClient implements IRepositoryClient {
 		return getResourceId(currentUri);
 	}
 	
-	public String getCurrentDownloadLink() throws MalformedURLException {
-		URL url = null;
+	public String getCurrentDownloadLink() throws Exception {
+		URL url = new URL(cachedHttpClient.getServerUrl());
 		String path = url.getPath();
 		int pos = path.indexOf('/', 1);
 		StringBuilder sb = new StringBuilder();
@@ -381,8 +423,16 @@ public class RepositoryClient implements IRepositoryClient {
 	/* (non-Javadoc)
 	 * @see de.jlo.talendcomp.jasperrepo.IRepositoryClient#setTimeout(java.lang.Integer)
 	 */
+	@Override
 	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
+	}
+	
+	@Override
+	public void close() {
+		if (cachedHttpClient != null) {
+			cachedHttpClient.close();
+		}
 	}
 
 }

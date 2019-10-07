@@ -8,18 +8,17 @@ public interface IRepositoryClient {
 
 	void uploadFile(String fileName, String folderUri, String description) throws Exception;
 
-	File downloadFile(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite)
-			throws Exception;
+	File downloadFile(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception;
+
+	File downloadFile(String uri, String dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception;
 
 	void copy(String sourceUri, String targetFolderUri) throws Exception;
 
 	void move(String sourceUri, String targetFolderUri) throws Exception;
 
-	void downloadFile(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception;
-
 	void deleteResource(String uri) throws Exception;
 
-	boolean existsFile(String uri) throws Exception;
+	boolean existsResource(String uri) throws Exception;
 
 	boolean createFolder(String uri) throws Exception;
 
@@ -28,5 +27,9 @@ public interface IRepositoryClient {
 	boolean nextListedResource();
 
 	void setTimeout(Integer timeout);
+	
+	void close();
+
+	String infoResource(String uri, boolean expanded) throws Exception;
 
 }
