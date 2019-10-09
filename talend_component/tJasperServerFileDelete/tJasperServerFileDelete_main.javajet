@@ -14,7 +14,7 @@
 	boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 %>	
 	try {
-		<%=cid%>.deleteResource(<%=sourceUri%>);
+		<%=cid%>.delete(<%=sourceUri%>);
 	} catch (Exception e) {
 		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
 <%		if (dieOnError) {%>

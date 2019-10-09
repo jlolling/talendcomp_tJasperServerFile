@@ -326,4 +326,48 @@ public final class TypeUtil {
         return Math.round(value * d) / d;
     }
  
+	public static String getResourceMimeType(String filename) {
+		int p = filename.lastIndexOf('.');
+		if (p > 0 && p < filename.length() - 1) {
+			String ext = filename.substring(p + 1).toLowerCase();
+			if ("pdf".equals(ext)) {
+				return "application/pdf";
+			} else if ("xls".equals(ext)) {
+				return "application/xls";
+			} else if ("xlsx".equals(ext)) {
+				return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			} else if ("docx".equals(ext)) {
+				return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			} else if ("doc".equals(ext)) {
+				return "application/doc";
+			} else if ("ods".equals(ext)) {
+				return "application/vnd.oasis.opendocument.spreadsheet";
+			} else if ("odt".equals(ext)) {
+				return "application/vnd.oasis.opendocument.text";
+			} else if ("png".equals(ext) || "gif".equals(ext) || "bmp".equals(ext) || "psd".equals(ext) || "jpg".equals(ext) || "dia".equals(ext)) {
+				return "image/" + ext;
+			} else if ("html".equals(ext)) {
+				return "text/html";
+			} else if ("rtf".equals(ext)) {
+				return "application/rtf";
+			} else if ("jrxml".equals(ext)) {
+				return "application/jrxml";
+			} else if ("jar".equals(ext)) {
+				return "application/zip";
+			} else if ("txt".equals(ext)) {
+				return "plain/txt";
+			} else if ("csv".equals(ext)) {
+				return "plain/csv";
+			} else if ("xml".equals(ext)) {
+				return "application/xml";
+			} else {
+				return "application/" + ext;
+			}
+		} else {
+
+		}
+		return null;
+	}
+
+
 }

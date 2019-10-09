@@ -25,14 +25,14 @@
 %>
     try {
 	    // download file
-    	<%=cid%>.downloadFile(<%=fileURI%>, <%=destDir%>, <%=fileName%>, <%=createDir%>, <%=replaceFile%>);
+    	<%=cid%>.download(<%=fileURI%>, <%=destDir%>, <%=fileName%>, <%=createDir%>, <%=replaceFile%>);
     	java.io.File downloadedFile_<%=cid%> = <%=cid%>.getCurrentDownloadFile();
     	globalMap.put("<%=cid%>_FILE_PATH", downloadedFile_<%=cid%>.getAbsolutePath());
     	globalMap.put("<%=cid%>_FILE_NAME", downloadedFile_<%=cid%>.getName());
     	globalMap.put("<%=cid%>_FILE_LENGTH", downloadedFile_<%=cid%>.length()); 
-<% if (removeFile) {%>
-        <%=cid%>.deleteResource(<%=fileURI%>);
-<% }%>    	
+<% if (removeFile) { %>
+        <%=cid%>.delete(<%=fileURI%>);
+<% } %>
     } catch (Exception e) {
     	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
     	throw e;

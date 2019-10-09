@@ -12,7 +12,6 @@
 	String cid = node.getUniqueName();
 	String sourceUri = ElementParameterParser.getValue(node, "__SOURCE_URI__");
 	String targetFolderURI = ElementParameterParser.getValue(node, "__TARGET_FOLDER_URI__");
-	String createfolder = ElementParameterParser.getValue(node, "__CREATE_FOLDER__");
 	boolean move = "true".equals(ElementParameterParser.getValue(node, "__MOVE__"));
 	String overwrite = ElementParameterParser.getValue(node, "__OVERWRITE__");
 %>	
@@ -22,11 +21,6 @@
 	<%=cid%>.setOverwrite(false);
 <%  }%>
 	try {
-<%  if ("true".equals(createfolder)) {%>
-        // create folder if not exists
-		boolean <%=cid%>_folderCreated = <%=cid%>.createFolder(<%=targetFolderURI%>);
-		globalMap.put("<%=cid%>_FOLDER_CREATED", <%=cid%>_folderCreated);
-<%  }%>
 <%  if (move) {%>
 		<%=cid%>.move(<%=sourceUri%>, <%=targetFolderURI%>);
 <%  } else {%>

@@ -45,7 +45,7 @@
     }
     int count_files_<%=cid%> = 0;
     // iterator through the resources
-    while (<%=cid%>.nextListedResource()) {
+    while (<%=cid%>.next()) {
 		count_files_<%=cid%>++;
 		globalMap.put("<%=cid%>_FILE_URI", <%=cid%>.getCurrentUri());
 		globalMap.put("<%=cid%>_FOLDER_URI", <%=cid%>.getCurrentListFolderUri());

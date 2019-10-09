@@ -12,7 +12,6 @@
 	String cid = node.getUniqueName();
 	String file = ElementParameterParser.getValue(node, "__FILE_NAME__");
 	String folderURI = ElementParameterParser.getValue(node, "__FOLDER_URI__");
-	String createfolder = ElementParameterParser.getValue(node, "__CREATE_FOLDER__");
 	String description = ElementParameterParser.getValue(node, "__FILE_DESCRIPTION__");
 	if (description == null || description.isEmpty()) {
 		description = "null";
@@ -25,12 +24,7 @@
 	<%=cid%>.setOverwrite(false);
 <%  }%>
 	try {
-<%  if ("true".equals(createfolder)) {%>
-        // create folder if not exists
-		boolean <%=cid%>_folderCreated = <%=cid%>.createFolder(<%=folderURI%>);
-		globalMap.put("<%=cid%>_FOLDER_CREATED", <%=cid%>_folderCreated);
-<%  }%>
-		<%=cid%>.uploadFile(<%=file%>, <%=folderURI%>, <%=description%>);
+		<%=cid%>.upload(<%=file%>, <%=folderURI%>, <%=description%>);
 		globalMap.put("<%=cid%>_FILE_URI", <%=cid%>.getCurrentUri()); 
 		globalMap.put("<%=cid%>_FILE_DOWNLOAD_LINK", <%=cid%>.getCurrentDownloadLink());
 		java.io.File uploadedFile_<%=cid%> = new java.io.File(<%=file%>);
