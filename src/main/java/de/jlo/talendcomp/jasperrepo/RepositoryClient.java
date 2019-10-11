@@ -62,9 +62,18 @@ public class RepositoryClient {
 		}
 	}
 	
-	public String getServerInfo() throws Exception {
+	public JsonNode getServerInfo() throws Exception {
 		checkHttpClient();
-		return httpClient.get(httpClient.getAbsoluteUrl(serverInfoUrlPath));
+		String response = httpClient.get(httpClient.getAbsoluteUrl(serverInfoUrlPath));
+		if (httpClient.isSuccessFul()) {
+			ObjectNode responseNode = (ObjectNode) objectMapper.readTree(response);
+			responseNode.put("serverUrl", httpClient.getServerUrl());
+			responseNode.put("serverLogin", httpClient.getLogin());
+			currentResourceNode = responseNode;
+			return currentResourceNode;
+		} else {
+			return null;
+		}
 	}
 	
 	public boolean isOverwrite() {

@@ -51,10 +51,12 @@ public class HttpClient {
 	private CloseableHttpClient closableHttpClient = null;
 	private HttpClientContext context = null;
 	private String serverUrl = null;
+	private String login = null;
 	private boolean success = false;
 	private Header[] currentResponseHeaders = null;
 	
 	public HttpClient(String urlStr, String user, String password, int timeout) throws Exception {
+		login = user;
 		closableHttpClient = createCloseableClient(urlStr, user, password, timeout);
 	}
 	
@@ -540,6 +542,10 @@ public class HttpClient {
 			}
 		}
 		return null;
+	}
+
+	public String getLogin() {
+		return login;
 	}
 
 }
