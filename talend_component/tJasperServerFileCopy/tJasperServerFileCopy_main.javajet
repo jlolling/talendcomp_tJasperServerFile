@@ -20,6 +20,9 @@
 <%  } else {%>
 	<%=cid%>.setOverwrite(false);
 <%  }%>
+	globalMap.remove("<%=cid%>_FILE_URI"); 
+	globalMap.remove("<%=cid%>_FILE_DOWNLOAD_LINK");
+	globalMap.remove("<%=cid%>_FILE_NAME");
 	try {
 <%  if (move) {%>
 		<%=cid%>.move(<%=sourceUri%>, <%=targetFolderURI%>);

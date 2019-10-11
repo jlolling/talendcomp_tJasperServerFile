@@ -54,5 +54,7 @@
       <IMPORT NAME="log4j" MODULE="log4j-1.2.17.jar" REQUIRED="true"/>
     </IMPORTS> 
   </CODEGENERATION>  
-  <RETURNS/>
+  <RETURNS> 
+    <RETURN NAME="SERVER_INFO" TYPE="id_Object" AVAILABILITY="AFTER"/> 
+  </RETURNS>
 </COMPONENT>

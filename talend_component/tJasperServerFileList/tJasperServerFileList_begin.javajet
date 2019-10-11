@@ -23,18 +23,25 @@
 		timeout = "null";
 	}
 %>
-    de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
-    // configure the connection
-<%  if (useExistingClient) { %>
-	 <%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
-<%  } else { %>
-    try {
-      <%=cid%>.setTimeout(<%=timeout%>);
-    	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
-    } catch (Exception e) {
-    	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
-    	throw e;
-    }
+	globalMap.remove("<%=cid%>_FILE_URI");
+	globalMap.remove("<%=cid%>_FOLDER_URI");
+	globalMap.remove("<%=cid%>_RELATIVE_FILE_URI");
+	globalMap.remove("<%=cid%>_FILE_RESOURCE_ID");
+	globalMap.remove("<%=cid%>_FILE_RESOURCE_LABEL");
+	globalMap.remove("<%=cid%>_FILE_DOWNLOAD_LINK");
+	globalMap.put("<%=cid%>_NB_FILE", 0);    
+	de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
+	// configure the connection
+<%	if (useExistingClient) { %>
+	<%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
+<%	} else { %>
+	try {
+		<%=cid%>.setTimeout(<%=timeout%>);
+		<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
+	} catch (Exception e) {
+		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+		throw e;
+	}
 <%  } %>
     try {
     	// get the resource descriptors

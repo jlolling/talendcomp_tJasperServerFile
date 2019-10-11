@@ -10,8 +10,8 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode) codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-   boolean useExistingClient = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CLIENT__"));
-   String component = ElementParameterParser.getValue(node, "__CLIENT_COMPONENT__");
+	boolean useExistingClient = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CLIENT__"));
+	String component = ElementParameterParser.getValue(node, "__CLIENT_COMPONENT__");
 	String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_REPOSITORY_URL__");
 	String serviceUser = ElementParameterParser.getValue(node, "__SERVICE_USER__");
 	String servicePassword = ElementParameterParser.getValue(node, "__SERVICE_PASSWORD__");
@@ -26,8 +26,8 @@
 	 <%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
 <%  } else { %>
     try {
-      <%=cid%>.setTimeout(<%=timeout%>);
-    	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
+		<%=cid%>.setTimeout(<%=timeout%>);
+		<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);
     } catch (Exception e) {
     	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
     	throw e;
