@@ -19,12 +19,12 @@
 	}
 %>
     de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
+	 globalMap.put("<%=cid%>", <%=cid%>);
     // configure the connection
     globalMap.remove("<%=cid%>_SERVER_INFO");
     try {
       <%=cid%>.setTimeout(<%=timeout%>);
     	<%=cid%>.init(<%=serviceURL%>, <%=serviceUser%>, <%=servicePassword%>);  
-    	globalMap.put("repoclient_<%=cid%>", <%=cid%>);
     	globalMap.put("<%=cid%>_SERVER_INFO", <%=cid%>.getServerInfo().toString());
     } catch (Exception e) {
     	globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());

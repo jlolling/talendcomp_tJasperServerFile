@@ -31,9 +31,10 @@
 	globalMap.remove("<%=cid%>_FILE_DOWNLOAD_LINK");
 	globalMap.put("<%=cid%>_NB_FILE", 0);    
 	de.jlo.talendcomp.jasperrepo.RepositoryClient <%=cid%> = new de.jlo.talendcomp.jasperrepo.RepositoryClient();
+	globalMap.put("<%=cid%>", <%=cid%>);
 	// configure the connection
 <%	if (useExistingClient) { %>
-	<%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("repoclient_<%=component%>"));
+	<%=cid%>.init((de.jlo.talendcomp.jasperrepo.RepositoryClient) globalMap.get("<%=component%>"));
 <%	} else { %>
 	try {
 		<%=cid%>.setTimeout(<%=timeout%>);

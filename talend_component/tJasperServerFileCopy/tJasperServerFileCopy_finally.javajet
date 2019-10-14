@@ -1,14 +1,11 @@
-<%@ jet 
-  imports="
+<%@ jet
+	imports="
 		org.talend.core.model.process.INode
 		org.talend.core.model.process.ElementParameterParser
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
-%>
-<%
+	"
 %>
 
-  } // close file loop
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode) codeGenArgument.getArgument();
@@ -22,4 +19,3 @@
 		}
 	}
 <%	} %>
- 

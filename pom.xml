@@ -5,7 +5,7 @@
 
 	<groupId>de.jlo.talendcomp</groupId>
 	<artifactId>jlo-talendcomp-jasperserverfile</artifactId>
-	<version>2.0</version>
+	<version>2.1</version>
 	<packaging>jar</packaging>
 
 	<name>jlo-talendcomp-jasperserver</name>
@@ -143,6 +143,16 @@
 						</goals>
 						<configuration>
 							<componentName>tJasperServerFilePut</componentName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>tJasperServerClose</id>
+						<goals>
+							<goal>component</goal>
+						</goals>
+						<configuration>
+							<componentName>tJasperServerClose</componentName>
+							<noJars>true</noJars>
 						</configuration>
 					</execution>
 				</executions>

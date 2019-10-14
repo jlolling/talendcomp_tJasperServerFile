@@ -88,6 +88,9 @@ public class HttpClient {
 	}
 	
 	private String execute(HttpUriRequest request, boolean expectResponse) throws Exception {
+		if (closableHttpClient == null) {
+			throw new Exception("HttpClient is not connected");
+		}
 		success = false;
 		String responseContent = "";
 		currentAttempt = 0;
@@ -167,6 +170,9 @@ public class HttpClient {
 	}
 
 	private void executeDownload(HttpUriRequest request, String targetFilePath) throws Exception {	
+		if (closableHttpClient == null) {
+			throw new Exception("HttpClient is not connected");
+		}
     	success = false;
 		currentAttempt = 0;
 		for (currentAttempt = 0; currentAttempt <= maxRetriesInCaseOfErrors; currentAttempt++) {
@@ -507,6 +513,7 @@ public class HttpClient {
 		if (closableHttpClient != null) {
 			try {
 				closableHttpClient.close();
+				closableHttpClient = null;
 			} catch (IOException e) {
 				// ignore
 			}
