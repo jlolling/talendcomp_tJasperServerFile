@@ -18,6 +18,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -25,9 +26,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -294,17 +293,17 @@ public class HttpClient {
 			LOG.debug("POST (upload)" + urlStr);
 		}
         HttpPost request = new HttpPost(urlStr);
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addBinaryBody("fileContent", attachment, ContentType.create(TypeUtil.getResourceMimeType(filePath)), attachment.getName());
-        request.setEntity(builder.build()); 
+        EntityBuilder builder = EntityBuilder.create();
+        builder.setFile(attachment);
         request.addHeader("Connection", "Keep-Alive");
         request.addHeader("Keep-Alive", "timeout=5, max=0");
         request.addHeader("Accept", "application/json");
         request.addHeader("Content-Type", TypeUtil.getResourceMimeType(filePath));
-        request.addHeader("Content-Disposition", "attachment; filename=" + attachment.getName());
+        request.addHeader("Content-Disposition", "attachment;filename=" + Util.buildResourceId(attachment.getName()));
         if (fileDescription != null) {
             request.addHeader("Content-Description", fileDescription);
         }
+        request.setEntity(builder.build()); 
         return execute(request, true);
 	}
 	

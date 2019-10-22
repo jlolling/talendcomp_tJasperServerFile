@@ -24,7 +24,7 @@ public class TestRepositoryClient {
 	@BeforeClass
 	public static void test01Connect() throws Exception {
 		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		System.out.println("Connect to server...");
 		rc = new RepositoryClient();
 		rc.setTimeout(10000);
@@ -90,8 +90,49 @@ public class TestRepositoryClient {
 	}
 
 	@Test
+	public void test063UploadContentResourceWithRenamedId() throws Exception {
+		String filePath = "/Data/Talend/testdata/jasper/barcode_test#1.pdf";
+		String description = "Upload Test time: " + System.currentTimeMillis();
+		String targetFolderId = "/ContentFiles/pdf";
+		JsonNode json = rc.upload(filePath, targetFolderId, description);
+		System.out.println(json);
+		assertEquals("ResourceID wrong", targetFolderId + "/barcode_test_1.pdf", json.get("uri").textValue());
+		assertEquals("Label wrong", "barcode_test#1.pdf", json.get("label").textValue());
+	}
+
+	@Test
 	public void test062UploadResourceFile() throws Exception {
 		String filePath = "/Data/Talend/testdata/jasper/barcode_test.jrxml";
+		String description = "Upload Test time: " + System.currentTimeMillis();
+		String targetFolderId = "/ContentFiles/pdf";
+		JsonNode json = rc.upload(filePath, targetFolderId, description);
+		System.out.println(json);
+		assertTrue(true);
+	}
+
+	@Test
+	public void test062UploadResourceFileExcel() throws Exception {
+		String filePath = "/Users/jan/Desktop/diff_rep_136743188_tontraegerhersteller_2016_2#2016_4.xlsx";
+		String description = "Upload Test time: " + System.currentTimeMillis();
+		String targetFolderId = "/ContentFiles/xls";
+		JsonNode json = rc.upload(filePath, targetFolderId, description);
+		System.out.println(json);
+		assertTrue(true);
+	}
+
+	@Test
+	public void test062UploadResourceFileZIP() throws Exception {
+		String filePath = "/Users/jan/Desktop/GVL-producer_detail_report_files_2016-1--139336343.pdf";
+		String description = "Upload Test time: " + System.currentTimeMillis();
+		String targetFolderId = "/ContentFiles/xls";
+		JsonNode json = rc.upload(filePath, targetFolderId, description);
+		System.out.println(json);
+		assertTrue(true);
+	}
+
+	@Test
+	public void test062UploadResourceFileLargePDF() throws Exception {
+		String filePath = "/Users/jan/Desktop/IT-VPNSophos-030819-0936-172.pdf";
 		String description = "Upload Test time: " + System.currentTimeMillis();
 		String targetFolderId = "/ContentFiles/pdf";
 		JsonNode json = rc.upload(filePath, targetFolderId, description);
@@ -125,7 +166,7 @@ public class TestRepositoryClient {
 		}
 		assertTrue(json != null);
 	}
-	
+
 	@Test
 	public void test111Move() throws Exception {
 		String resourceId = "/ContentFiles/pdf/barcode_test.pdf";

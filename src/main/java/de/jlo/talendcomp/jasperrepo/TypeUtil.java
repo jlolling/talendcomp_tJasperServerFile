@@ -354,6 +354,8 @@ public final class TypeUtil {
 				return "application/jrxml";
 			} else if ("jar".equals(ext)) {
 				return "application/zip";
+			} else if ("zip".equals(ext)) {
+				return "application/zip";
 			} else if ("txt".equals(ext)) {
 				return "plain/txt";
 			} else if ("csv".equals(ext)) {
