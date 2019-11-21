@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="2.3" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20191121" STARTABLE="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="2.4" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20191121" STARTABLE="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -52,12 +52,12 @@
       <DEFAULT>30000</DEFAULT> 
     </PARAMETER>  
     <PARAMETER NAME="RELEASE_LABEL_20191121" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 2.3 build at: 20191121</DEFAULT>
+      <DEFAULT>Release: 2.4 build at: 20191121</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-jasperserverfile" MODULE="jlo-talendcomp-jasperserverfile-2.3.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-jasperserverfile-2.3/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-jasperserverfile" MODULE="jlo-talendcomp-jasperserverfile-2.4.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-jasperserverfile-2.4/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.9.8.jar" MVN="mvn:org.talend.libraries/jackson-databind-2.9.8/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.9.0.jar" MVN="mvn:org.talend.libraries/jackson-annotations-2.9.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.8.jar" MVN="mvn:org.talend.libraries/jackson-core-2.9.8/6.0.0-SNAPSHOT" REQUIRED="true"/>

@@ -131,21 +131,21 @@ public class HttpClient {
             	if (currentAttempt < maxRetriesInCaseOfErrors) {
                 	// this can happen, we try it again
             		if (request instanceof HttpPost) {
-                    	LOG.warn("POST request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". \n   Payload: " + EntityUtils.toString(((HttpPost) request).getEntity()) + "\n   Waiting " + waitMillisAfterError + "ms and retry request.", e);
+                    	LOG.warn("POST request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". Waiting " + waitMillisAfterError + "ms and retry request.", e);
             		} else if (request instanceof HttpPut) {
-                    	LOG.warn("PUT request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". \n   Payload: " + EntityUtils.toString(((HttpPut) request).getEntity()) + "\n   Waiting " + waitMillisAfterError + "ms and retry request.", e);
+                    	LOG.warn("PUT request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". Waiting " + waitMillisAfterError + "ms and retry request.", e);
             		} else if (request instanceof HttpGet) {
-                    	LOG.warn("GET request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". \n Waiting " + waitMillisAfterError + "ms and retry request.", e);
+                    	LOG.warn("GET request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". Waiting " + waitMillisAfterError + "ms and retry request.", e);
             		} else if (request instanceof HttpDelete) {
-                    	LOG.warn("DEL request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". \n Waiting " + waitMillisAfterError + "ms and retry request.", e);
+                    	LOG.warn("DEL request: " + request.getURI() + " failed (" + (currentAttempt + 1) + ". attempt, " + (maxRetriesInCaseOfErrors - currentAttempt) + " retries left). StatusCode=" + statusCode + ". Waiting " + waitMillisAfterError + "ms and retry request.", e);
             		}
                 	Thread.sleep(waitMillisAfterError);
             	} else {
             		if (request instanceof HttpPost) {
-            			String message = "POST request: " + request.getURI() + " failed. StatusCode=" + statusCode + ". No retry left, max: " + maxRetriesInCaseOfErrors + ".\n   Payload: " + EntityUtils.toString(((HttpPost) request).getEntity()); 
+            			String message = "POST request: " + request.getURI() + " failed. StatusCode=" + statusCode + ". No retry left, max: " + maxRetriesInCaseOfErrors; 
                     	throw new Exception(message, e);
             		} else if (request instanceof HttpPut) {
-            			String message = "PUT request: " + request.getURI() + " failed. StatusCode=" + statusCode + ". No retry left, max: " + maxRetriesInCaseOfErrors + ".\n   Payload: " + EntityUtils.toString(((HttpPut) request).getEntity()); 
+            			String message = "PUT request: " + request.getURI() + " failed. StatusCode=" + statusCode + ". No retry left, max: " + maxRetriesInCaseOfErrors; 
                     	throw new Exception(message, e);
             		} else if (request instanceof HttpGet) {
             			String message = "GET request: " + request.getURI() + " failed. StatusCode=" + statusCode + ". No retry left, max: " + maxRetriesInCaseOfErrors + "."; 
