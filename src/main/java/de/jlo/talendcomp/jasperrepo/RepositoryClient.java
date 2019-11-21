@@ -86,6 +86,9 @@ public class RepositoryClient {
 
 	public JsonNode upload(String filePath, String folderUri, String description) throws Exception {
 		currentListResources.clear();
+		if (filePath == null || filePath.trim().isEmpty()) {
+			throw new IllegalArgumentException("filePath cannot be null or empty");
+		}
 		File f = new File(filePath);
 		if (f.canRead() == false) {
 			throw new Exception("Upload file failed: File: " + f.getAbsolutePath() + " does not exists or cannot be read!");
@@ -120,6 +123,12 @@ public class RepositoryClient {
 
 	public File download(String uri, File dir, String targetFileName, boolean createDir, boolean overwrite) throws Exception {
 		currentResourceNode = null;
+		if (uri == null || uri.trim().isEmpty()) {
+			throw new IllegalArgumentException("uri cannot be null or empty");
+		}
+		if (dir == null) {
+			throw new IllegalArgumentException("dir cannot be null");
+		}
 		if (exist(uri)) {
 			info(uri, false);
 		} else {
@@ -156,6 +165,9 @@ public class RepositoryClient {
 	}
 
 	public File download(String uri, String dir, String name, boolean createDir, boolean overwrite) throws Exception {
+		if (dir == null || dir.trim().isEmpty()) {
+			throw new IllegalArgumentException("dir cannot be null or empty");
+		}
 		final File file = new File(dir);
 		return download(uri, file, name, createDir, overwrite);
 	}
@@ -192,6 +204,12 @@ public class RepositoryClient {
 	
 	public JsonNode move(String sourceUri, String targetFolderUri) throws Exception {
 		currentResourceNode = null;
+		if (sourceUri == null || sourceUri.trim().isEmpty()) {
+			throw new IllegalArgumentException("sourceUri cannot be null or empty");
+		}
+		if (targetFolderUri == null || targetFolderUri.trim().isEmpty()) {
+			throw new IllegalArgumentException("targetFolderUri cannot be null or empty");
+		}
 		String sourceResourceId = Util.getResourceId(sourceUri);
 		String targetUri = targetFolderUri + "/" + sourceResourceId;
 		if (exist(sourceUri) == false) {
@@ -276,6 +294,9 @@ public class RepositoryClient {
 		currentListResources.clear();
 		currentIndex = 0;
 		currentResourceNode = null;
+		if (uri == null || uri.trim().isEmpty()) {
+			throw new IllegalArgumentException("uri cannot be null or empty");
+		}
 		currentListFolderUri = uri;
 		checkHttpClient();
 		try {
