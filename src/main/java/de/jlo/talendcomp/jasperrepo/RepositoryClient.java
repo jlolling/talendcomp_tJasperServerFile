@@ -87,11 +87,11 @@ public class RepositoryClient {
 	public JsonNode upload(String filePath, String folderUri, String description) throws Exception {
 		currentListResources.clear();
 		if (filePath == null || filePath.trim().isEmpty()) {
-			throw new IllegalArgumentException("filePath cannot be null or empty");
+			throw new IllegalArgumentException("The path for the file to upload cannot be null or empty.");
 		}
 		File f = new File(filePath);
 		if (f.canRead() == false) {
-			throw new Exception("Upload file failed: File: " + f.getAbsolutePath() + " does not exists or cannot be read!");
+			throw new Exception("Upload file failed: The local File: " + f.getAbsolutePath() + " to upload does not exists or cannot be read!");
 		}
 		if (description == null) {
 			description = "Uploaded by Talend-job";
