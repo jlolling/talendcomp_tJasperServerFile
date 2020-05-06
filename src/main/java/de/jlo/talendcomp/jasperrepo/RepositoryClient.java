@@ -108,8 +108,14 @@ public class RepositoryClient {
 		try {
 			String url = getAbsoluteRepoUrl(folderUri);
 			String response = httpClient.upload(url, filePath, description);
+			if (response == null || response.trim().isEmpty()) {
+				throw new Exception("No response received");
+			}
 			if (httpClient.isSuccessFul()) {
 				JsonNode responseNode = objectMapper.readTree(response);
+				if (responseNode == null) {
+					throw new Exception("None-json response received: response content: " + response);
+				}
 				currentResourceNode = responseNode;
 				setupResourceTypeAttribute();
 				return responseNode;
@@ -189,8 +195,14 @@ public class RepositoryClient {
 			headers.put("Content-Location", sourceUri);
 			String url = getAbsoluteRepoUrl(targetFolderUri) + "?createFolders=true&overwrite=" + overwrite;
 			String response = httpClient.post(url, null, true, headers);
+			if (response == null || response.trim().isEmpty()) {
+				throw new Exception("No response received");
+			}
 			if (httpClient.isSuccessFul()) {
 				JsonNode responseNode = objectMapper.readTree(response);
+				if (responseNode == null) {
+					throw new Exception("None-json response received: response content: " + response);
+				}
 				currentResourceNode = responseNode;
 				setupResourceTypeAttribute();
 				return currentResourceNode;
@@ -198,7 +210,7 @@ public class RepositoryClient {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("copy sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
+			throw new Exception("Copy sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
 		}
 	}
 	
@@ -223,8 +235,14 @@ public class RepositoryClient {
 			headers.put("Content-Location", sourceUri);
 			String url = getAbsoluteRepoUrl(targetFolderUri) + "?createFolders=true&overwrite=" + overwrite;
 			String response = httpClient.put(url, null, true, headers);
+			if (response == null || response.trim().isEmpty()) {
+				throw new Exception("No response received");
+			}
 			if (httpClient.isSuccessFul()) {
 				JsonNode responseNode = objectMapper.readTree(response);
+				if (responseNode == null) {
+					throw new Exception("None-json response received: response content: " + response);
+				}
 				currentResourceNode = responseNode;
 				setupResourceTypeAttribute();
 				return currentResourceNode;
@@ -232,7 +250,7 @@ public class RepositoryClient {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("copy sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
+			throw new Exception("Move sourceUri: " + sourceUri + " targetUri: " + targetUri + " failed: " + e.getMessage(), e);
 		}
 	}
 
@@ -251,7 +269,7 @@ public class RepositoryClient {
 		try {
 			return httpClient.exist(getAbsoluteRepoUrl(uri));
 		} catch (Exception e) {
-			throw new Exception("exist uri: " + uri + " failed: " + e.getMessage(), e);
+			throw new Exception("Exist uri: " + uri + " failed: " + e.getMessage(), e);
 		}
 	}
 	
@@ -277,8 +295,14 @@ public class RepositoryClient {
 			Map<String, String> additionalHeaders = new HashMap<>();
 			additionalHeaders.put("Accept", "application/repository.file+json");
 			String response = httpClient.get(getAbsoluteRepoUrl(uri) + "?expanded=" + expanded, additionalHeaders);
+			if (response == null || response.trim().isEmpty()) {
+				throw new Exception("No response received");
+			}
 			if (httpClient.isSuccessFul()) {
 				JsonNode responseNode = objectMapper.readTree(response);
+				if (responseNode == null) {
+					throw new Exception("None-json response received: response content: " + response);
+				}
 				currentResourceNode = responseNode;
 				setupResourceTypeAttribute();
 				return currentResourceNode;
@@ -286,7 +310,7 @@ public class RepositoryClient {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("info uri: " + uri + " failed: " + e.getMessage(), e);
+			throw new Exception("Info uri: " + uri + " failed: " + e.getMessage(), e);
 		}
 	}
 
@@ -301,12 +325,21 @@ public class RepositoryClient {
 		checkHttpClient();
 		try {
 			String response = httpClient.get(getAbsoluteRepoUrl("") + "?folderUri=" + uri + "&limit=0&type=file&recursive=" + recursive + (filter != null ? "&q=" + URLEncoder.encode(filter,"UTF-8") : ""));
+			if (response == null || response.trim().isEmpty()) {
+				throw new Exception("No response received");
+			}
 			if (httpClient.isSuccessFul()) {
 				JsonNode responseNode = objectMapper.readTree(response);
+				if (responseNode == null) {
+					throw new Exception("None-json response received: response content: " + response);
+				}
 				ArrayNode resourceArray = (ArrayNode) responseNode.get("resourceLookup");
 				for (JsonNode n : resourceArray) {
-					if (n.get("resourceType").asText().equals("file")) {
-						currentListResources.add(n);
+					JsonNode resourceTypeNode = n.get("resourceType");
+					if (resourceTypeNode != null) {
+						if (resourceTypeNode.asText().equals("file")) {
+							currentListResources.add(n);
+						}
 					}
 				}
 				return responseNode;
@@ -314,7 +347,7 @@ public class RepositoryClient {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("list uri: " + uri + " failed: " + e.getMessage(), e);
+			throw new Exception("List uri: " + uri + " failed: client status-code: " + httpClient.getStatusCode() + " message: " + e.getMessage(), e);
 		}
 	}
 
