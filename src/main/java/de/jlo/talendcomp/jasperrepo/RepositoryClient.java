@@ -325,6 +325,9 @@ public class RepositoryClient {
 		checkHttpClient();
 		try {
 			String response = httpClient.get(getAbsoluteRepoUrl("") + "?folderUri=" + uri + "&limit=0&type=file&recursive=" + recursive + (filter != null ? "&q=" + URLEncoder.encode(filter,"UTF-8") : ""));
+			if (httpClient.getStatusCode() == 204) {
+				return null;
+			}
 			if (response == null || response.trim().isEmpty()) {
 				throw new Exception("No response received");
 			}

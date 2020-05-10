@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="2.6" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20200506" STARTABLE="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="2.7" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20200510" STARTABLE="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -48,13 +48,13 @@
     <PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="10" SHOW_IF="USE_EXISTING_CLIENT == 'false'"> 
       <DEFAULT>30000</DEFAULT> 
     </PARAMETER>  
-    <PARAMETER NAME="RELEASE_LABEL_20200506" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 2.6 build at: 20200506</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20200510" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 2.7 build at: 20200510</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-jasperserverfile" MODULE="jlo-talendcomp-jasperserverfile-2.6.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-jasperserverfile-2.6/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-jasperserverfile" MODULE="jlo-talendcomp-jasperserverfile-2.7.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-jasperserverfile-2.7/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.9.10.1.jar" MVN="mvn:org.talend.libraries/jackson-databind-2.9.10.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.9.10.jar" MVN="mvn:org.talend.libraries/jackson-annotations-2.9.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.10.jar" MVN="mvn:org.talend.libraries/jackson-core-2.9.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
