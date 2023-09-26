@@ -34,14 +34,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class HttpClient {
 	
-	private static Logger LOG = LoggerFactory.getLogger(HttpClient.class);
+	private static Logger LOG = LogManager.getLogger(HttpClient.class);
 	private int statusCode = 0;
 	private String statusMessage = null;
 	private int maxRetriesInCaseOfErrors = 0;
