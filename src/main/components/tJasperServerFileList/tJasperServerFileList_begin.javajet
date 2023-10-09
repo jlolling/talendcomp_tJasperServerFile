@@ -18,6 +18,7 @@
 	String folderURI = ElementParameterParser.getValue(node, "__FOLDER_URI__");
 	String recursive = ElementParameterParser.getValue(node, "__RECURSIVE__");
 	String filter = ElementParameterParser.getValue(node, "__FILE_NAME_FILTER__");
+	String resourceType = ElementParameterParser.getValue(node, "__RESOURCE_TYPE__");
 	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
 	if (timeout == null || timeout.trim().isEmpty()) {
 		timeout = "null";

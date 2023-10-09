@@ -42,6 +42,31 @@ public class RepositoryClient {
 	private String currentListFolderUri = null;
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 	private List<JsonNode> currentListResources = new ArrayList<>();
+	private String resourceType = "file";
+	private String[] resourceTypes = {
+			"file",
+			"folder",
+			"jndiJdbcDataSource",
+			"jdbcDataSource",
+			"awsDataSource",
+			"virtualDataSource",
+			"customDataSource",
+			"beanDataSource",
+			"xmlaConnection",
+			"dataType",
+			"listOfValues",
+			"query",
+			"inputControl",
+			"reportUnit",
+			"reportOptions",
+			"semanticLayerDataSource",
+			"domainTopic",
+			"mondrianConnection",
+			"secureMondrianConnection",
+			"olapUnit",
+			"mondrianXmlaDefinition",
+			"adhocDataView",
+			"dashboard"};
 	
 	public void init(RepositoryClient client) {
 		this.httpClient = client.getHttpClient();
@@ -277,13 +302,13 @@ public class RepositoryClient {
 		String hv = httpClient.getResponseHeaderValue("Content-Type");
 		if (hv != null && hv.startsWith("application/repository.")) {
 			int pos = hv.lastIndexOf('+');
-			String resourceType = null;
+			String type = null;
 			if (pos != -1) {
-				resourceType = hv.substring("application/repository.".length(), pos);
-				((ObjectNode) currentResourceNode).put("resourceType", resourceType);
+				type = hv.substring("application/repository.".length(), pos);
+				((ObjectNode) currentResourceNode).put("resourceType", type);
 			} else {
-				resourceType = hv.substring("application/repository.".length());
-				((ObjectNode) currentResourceNode).put("resourceType", resourceType);
+				type = hv.substring("application/repository.".length());
+				((ObjectNode) currentResourceNode).put("resourceType", type);
 			}
 		}
 	}
@@ -293,7 +318,7 @@ public class RepositoryClient {
 		checkHttpClient();
 		try {
 			Map<String, String> additionalHeaders = new HashMap<>();
-			additionalHeaders.put("Accept", "application/repository.file+json");
+			additionalHeaders.put("Accept", "application/repository." + resourceType + "+json");
 			String response = httpClient.get(getAbsoluteRepoUrl(uri) + "?expanded=" + expanded, additionalHeaders);
 			if (response == null || response.trim().isEmpty()) {
 				throw new Exception("No response received");
@@ -324,7 +349,7 @@ public class RepositoryClient {
 		currentListFolderUri = uri;
 		checkHttpClient();
 		try {
-			String response = httpClient.get(getAbsoluteRepoUrl("") + "?folderUri=" + uri + "&limit=0&type=file&recursive=" + recursive + (filter != null ? "&q=" + URLEncoder.encode(filter,"UTF-8") : ""));
+			String response = httpClient.get(getAbsoluteRepoUrl("") + "?folderUri=" + uri + "&limit=0&type=" + resourceType + "&recursive=" + recursive + (filter != null ? "&q=" + URLEncoder.encode(filter,"UTF-8") : ""));
 			if (httpClient.getStatusCode() == 204) {
 				return null;
 			}
@@ -340,7 +365,7 @@ public class RepositoryClient {
 				for (JsonNode n : resourceArray) {
 					JsonNode resourceTypeNode = n.get("resourceType");
 					if (resourceTypeNode != null) {
-						if (resourceTypeNode.asText().equals("file")) {
+						if (resourceTypeNode.asText().equals(resourceType)) {
 							currentListResources.add(n);
 						}
 					}
@@ -432,6 +457,16 @@ public class RepositoryClient {
 
 	public HttpClient getHttpClient() {
 		return httpClient;
+	}
+
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(String resourceType) {
+		if (resourceType != null && resourceType.trim().isEmpty() == false) {
+			this.resourceType = resourceType;
+		}
 	}
 
 }
